@@ -1,3 +1,4 @@
+import pickle
 print("""Welcome to Tic Tac Toe!
 Player 1: X
 Player 2: O
@@ -14,20 +15,20 @@ def print_current_board(board):
 		for line in f:
 			line = line.strip()
 			print(line.format(board=board))
+		print("\n \n")
 
 def check_winner(current_player):
 	win_positions = (
-		(1, 2, 3),
-		(4, 5, 6),
-		(7, 8, 9),
+		(0, 1, 2),
+		(3, 4, 5),
+		(6, 7, 8),
+		(0, 3, 6),
 		(1, 4, 7),
 		(2, 5, 8),
-		(3, 6, 9),
-		(1, 5, 9),
-		(3, 5, 7)
+		(0, 4, 8),
+		(2, 4, 6)
 	)
 	for combo in win_positions:
-		# print(combo)
 		if board[combo[0]] == board[combo[1]] == board[combo[2]] == current_player:
 			return True
 	else:
@@ -44,8 +45,21 @@ current_player = "X"
 while True:
 
 	print_current_board(board)
-	try :
-		move = int(input(f"Player {current_player}, enter a position (1-9): "))
+	try:
+		desired = input(f"Enter s to save and exit  \n ******OR***** \nEnter l to load from last saved, \n ******OR***** \nPlayer {current_player}, enter a position (1-9): ")
+		print("\n")
+		if desired == 's':
+			with open("./state.p", 'wb') as f:
+				pickle.dump(board, f)
+				print("Exiting" )
+				break
+		if desired == 'l':
+			with open("./state.p", 'rb') as f:
+				board = pickle.load(f)
+				print("Last game is as follows :")
+				continue
+		else:
+			move = int(desired)
 		if move < 1 or move > 10:
 			print("Invalid position! Please choose a number between 1 and 9.")
 			# continue
@@ -54,21 +68,18 @@ while True:
 		continue
 
 	if board[move-1] in [1,2,3,4,5,6,7,8,9]:
-		# print(board)
 		board[move-1] = current_player
 	else:
 		print("This spot is already taken. Try again.")
 		continue
 
-	print(f"{current_player}", check_winner(current_player))
 	if check_winner(current_player):
-		# print_current_board()
+		print_current_board(board)
 		print(f"Player {current_player} wins!")
 		
 		break
 
 	current_player = switch_player(current_player)
-	print(current_player)
 
 #
 # p1 = "Player 1, enter your move (0-9): "
